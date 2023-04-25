@@ -1,5 +1,5 @@
 {
-  "name": "mtasts-solution",
+  "name": "@drusepstrago/mtasts-solution",
   "version": "1.0.0",
   "description": "The simplified MTASTS solution for your domain",
   "main": "index.js",
