@@ -1,0 +1,26 @@
+{
+  "name": "mtasts-solution",
+  "version": "1.0.0",
+  "description": "The simplified MTASTS solution for your domain",
+  "main": "index.js",
+  "bin": {
+    "mtasts-solution": "bin/fetcher.js"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gaurav6386/mtasts-solution"
+  },
+  "keywords": [
+    "dns",
+    "email",
+    "domain",
+    "tls",
+    "mta-sts"
+  ],
+  "author": "Gaurav Pandey",
+  "license": "MIT"
+}
