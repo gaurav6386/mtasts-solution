@@ -9,6 +9,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gaurav6386/mtasts-solution"
+  },
+  "bugs": {
+    "url": "https://github.com/gaurav6386/mtasts-solution/issues"
+  },
   "keywords": [
     "dns",
     "email",
