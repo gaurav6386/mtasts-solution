@@ -2,6 +2,8 @@ import { fetcher } from "./actions/fetcher";
 import { parser } from "./actions/parser";
 import { RecordType, Record_Types } from "./types";
 
+export { Record_Types }
+
 /**
  * 
  * @param record 
