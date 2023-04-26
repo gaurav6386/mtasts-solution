@@ -1,4 +1,5 @@
-import { RecordType } from "./types";
+import { RecordType, Record_Types } from "./types";
+export { Record_Types };
 /**
  *
  * @param record
