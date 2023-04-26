@@ -1,6 +1,6 @@
 {
   "name": "mtasts-solution",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "The simplified MTASTS solution for your domain",
   "main": "index.js",
   "bin": {
