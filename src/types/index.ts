@@ -63,3 +63,8 @@ export interface AllStsRecordSchema {
     stsPolicyRecord: { exists: boolean, data: string | null },
     stsSmtpRecord: { exists: boolean, data: string | null }
 }
+
+export interface FetchResponseSchema {
+    record: AllStsRecordSchema | string,
+    tags: { stspolicy?: RecordTagSchema, stsreport?: RecordTagSchema }
+}

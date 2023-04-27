@@ -60,3 +60,10 @@ export interface AllStsRecordSchema {
         data: string | null;
     };
 }
+export interface FetchResponseSchema {
+    record: AllStsRecordSchema | string;
+    tags: {
+        stspolicy?: RecordTagSchema;
+        stsreport?: RecordTagSchema;
+    };
+}
