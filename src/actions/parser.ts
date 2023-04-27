@@ -1,5 +1,5 @@
-import { AllKeysValidationSchema, ParserReturnValue, RecordTagSchema, RecordType, Record_Types, StsPolicyValidatorSchema, StsSmtpValidatorSchema, TagDetails, UnionValidationSchema } from "../types";
-import { dmarcValidator, stsPolicyValidator, stsReportValidator } from "./validator";
+import { ParserReturnValue, RecordTagSchema, RecordType, Record_Types, TagDetails, UnionValidationSchema } from "../types";
+import { stsPolicyValidator, stsReportValidator } from "./validator";
 
 function validateRecord(record: string, validator: UnionValidationSchema): ParserReturnValue {
     let terms: string[] = record.split(/;/)
@@ -57,7 +57,7 @@ function validateRecord(record: string, validator: UnionValidationSchema): Parse
 	return retVal;
 }
 
-export async function parser(record: string, recordType: RecordType) {
+export async function parser(record: string, recordType: RecordType): Promise<ParserReturnValue | null> {
 	// Steps
 	// 1. Split policy string on semicolons into term pairs
 	// 2. Process and validate each term pair
