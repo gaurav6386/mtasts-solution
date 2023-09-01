@@ -4,9 +4,10 @@
   "description": "MTASTS parser, validator & generator for your domain ",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "files": ["/lib"],
+  "files": [
+    "lib/**/*"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc"
   },
   "repository": {
@@ -25,10 +26,10 @@
     "mtasts"
   ],
   "author": "Gaurav Pandey",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "devDependencies": {
-    "@types/node": "^18.16.1",
-    "typescript": "^5.0.4"
+    "@types/node": "^20.5.7",
+    "typescript": "^5.2.2"
   },
   "dependencies": {
     "email-validator": "^2.0.4"
