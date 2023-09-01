@@ -18,6 +18,7 @@ export class STSPolicy {
   validate(record: STSPolicyRecord): Promise<IValidationRecord> {
     return new Promise((resolve, reject) => {
       try {
+        if(!record) throw new Error('Please supply sts-policy record for validation!');
         const validatedRecord = validateRecord(this.type, record);
         resolve(validatedRecord);
       } catch(err: any) {
