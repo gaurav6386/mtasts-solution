@@ -1,12 +1,13 @@
 import { AllowedStsPolicyVersion, AllowedStsReportVersion, AllowedTLSRPTUriScheme, StsPolicyDescriptorSchema, StsReportDescriptorSchema } from "../types";
 
+//Add warning for potential issue in the provided DNS record in upcoming version
 export const stsPolicyDescriptor: StsPolicyDescriptorSchema = {
     'v': {
         required: true,
         description: "Specify sts version. Currently, only 'STSv1' is supported",
         validate(value: string): boolean {
             if(!value) throw new Error("v tag is required");
-            else if(!(value in AllowedStsPolicyVersion)) throw new Error('Invalid version in sts policy record');
+            else if(!(value in AllowedStsPolicyVersion)) throw new Error(`${value}: Invalid policy version specified`);
             return true;
         }
     },
@@ -25,7 +26,7 @@ export const stsReportDescriptor: StsReportDescriptorSchema = {
         required: true,
         description: "Specify version of TLSRPT policy. Currently, only 'TLSRPTv1 is supported. The other version will be added in later document.",
         validate(value: string) {
-            if(!(value in AllowedStsReportVersion)) throw new Error("Invalid TLSRPT version specified.");
+            if(!(value in AllowedStsReportVersion)) throw new Error(`${value}: Invalid TLSRPT version specified.`);
             return true;
         }
     },
@@ -42,7 +43,7 @@ export const stsReportDescriptor: StsReportDescriptorSchema = {
 					if(uri == directives[0]) isValidRua = true;
 				})
 			}
-			if(!isValidRua) throw new Error("Invalid URI scheme specified in rua");
+			if(!isValidRua) throw new Error(`Invalid URI scheme specified in rua`);
             return true;
         }
     }
