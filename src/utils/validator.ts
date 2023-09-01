@@ -11,20 +11,19 @@ function getValidator(type: AllowedRecordTypes){
 
 export function validateRecord(type: AllowedRecordTypes, record: AllowedRecords): IValidationRecord {
     let terms = record.split(/;/)
-		.map(t => t.trim()) // Trim surrounding whitespace
-		.filter(x => x !== ''); // Ignore empty tags
+        .map(t => t.trim()) // Trim surrounding whitespace
+        .filter(x => x !== ''); // Ignore empty tags
 
     let rules: string[][] = terms.map(x => x.split(/[=]/).map(p => p.trim()));
     let errors: IValidationError[] = [];
     let validationStatus: IValidationRecord = { valid: true, tags: {}, errors };
 
     // Make sure `v` is the first tag
-	if (!/^v$/i.test(rules[0][0])) {
-		errors.push({ statusCode: 403, message: `First tag in this record must be 'v', but found: '${rules[0][0]}'` });
-		validationStatus.valid = false;
+    if (!/^v$/i.test(rules[0][0])) {
+        errors.push({ actual: rules[0][0], expected: 'v', message: `First tag in this record must be 'v', but found: '${rules[0][0]}'` });
+        validationStatus.valid = false;
         return validationStatus;
-	}
-	
+    }
     const validator = getValidator(type);
     
     for(let rule of rules) {
@@ -43,11 +42,11 @@ export function validateRecord(type: AllowedRecordTypes, record: AllowedRecords)
                     tag.value = value;
                     validationStatus.tags[term as keyof RecordTagSchema] = tag;
                 } catch (err: any) {
-                    errors.push(err.message);
+                    errors.push({ message: err.message });
                 }
             }
-        } else errors.push({ statusCode: 403, message: `Unknown tag ${term}` })
+        } else errors.push({ actual: `${term}`, expected: Object.keys(validator),  message: `Unknown tag ${term}` })
     }
     if(errors.length) validationStatus.valid = false;
-	return validationStatus;
+    return validationStatus;
 }

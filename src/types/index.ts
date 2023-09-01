@@ -60,7 +60,9 @@ export type AllowedRecords = IRecordFormat[keyof IRecordFormat];
 
 
 export interface IValidationError {
-    statusCode: number;
+    // statusCode: number;
+    actual?: string | number | string[] | number[]; 
+    expected?: string | number | string[] | number[];
     message: string;
 }
 
