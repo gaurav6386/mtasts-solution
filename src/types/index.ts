@@ -1,70 +1,95 @@
-export enum Record_Types {
-    DMARC = "dmarc",
-    MTASTS = "mtasts",
-    STSPOLICY = "stspolicy",
-    STSREPORT = "stsreport"
-} 
+export const RecordTypes = {
+    STSPOLICY: 'stspolicy',
+    STSREPORT: 'stsreport',
+    DMARCREPORT: 'dmarcreport'
+} as const
+
+export const ErrorTypes = {
+    MissingVTag: 'MissingVTag'
+} as const
 
 // New versions will be added in future
-export enum AllowedStsPolicyVersion {
-    STSv1 = "STSv1"
-}
+export const AllowedStsPolicyVersion = {
+    STSv1: "STSv1",
+    // STSv2: "STSv2"
+} as const
 
 // New versions will be added in future
-export enum AllowedStsReportVersion {
-    TLSRPTv1 = "TLSRPTv1"
+export const AllowedStsReportVersion = {
+    TLSRPTv1: "TLSRPTv1"
+} as const
+
+export const AllowedTLSRPTUriScheme = { MAILTO: "mailto", HTTPS: "https" } as const;
+
+export type AllowedRecordTypes = typeof RecordTypes[keyof typeof RecordTypes]
+
+/** MTA-STS Policy record Types */
+type STSPolicyVersion = typeof AllowedStsPolicyVersion[keyof typeof AllowedStsPolicyVersion]
+export type STSPolicyRecord = `v=${STSPolicyVersion}; id=${number}`
+
+/** MTA-STS Report record Types */
+type STSReportVersion = typeof AllowedStsReportVersion[keyof typeof AllowedStsReportVersion]
+type STSReportUriSchemes = typeof AllowedTLSRPTUriScheme[keyof typeof AllowedTLSRPTUriScheme]
+export type ValidSTSRua = `${STSReportUriSchemes}:${string}`
+export type STSReportRecord = `v=${STSReportVersion}; rua=${STSReportUriSchemes}:${string}`
+
+/** DMARC Report Record Types */
+//--------- ToBeAdded ----------
+
+export interface IGenratorError {
+    statusCode: number;
+    message: string
 }
 
-// export enum AllowedUriEnum {
-//     MAILTO = 'mailto',
-//     HTTPS = 'https'
-// }
-
-export enum AllowedUriEnum { MAILTO = "mailto", HTTPS = "https" };
-
-/** Includes all keys that exists in the Dmarc & MtaSts Record */
-export enum AllKeysValidationSchema {
-    v = 'v',
-    id = 'id',
-    rua = 'rua'
+export interface IGeneratedRecord {
+    record: string;
+    errors: IGenratorError[]
 }
 
-/** Frequenly used type */
-type KeysOfUnion<T> = T extends T ? keyof T: never;
+export interface DNSRecordGenerator {
+    domainName: string;
+    generate(rua?: ValidSTSRua): IGeneratedRecord
+}
 
-export type AllowedUriSchema = AllowedUriEnum.HTTPS | AllowedUriEnum.MAILTO;
-export type RecordType = Record_Types.DMARC | Record_Types.MTASTS | Record_Types.STSPOLICY | Record_Types.STSREPORT;
+export interface IRecordFormat {
+    [RecordTypes.STSPOLICY]: STSPolicyRecord;
+    [RecordTypes.STSREPORT]: STSReportRecord;
+    // [RecordTypes.DMARCREPORT]: string
+}
+export type AllowedRecords = IRecordFormat[keyof IRecordFormat];
 
-export interface RecordValidatorSchema { required: boolean, description: string, validate?: (value: string) => void }
-export interface StsPolicyValidatorSchema { v: RecordValidatorSchema, id: RecordValidatorSchema }
-export interface StsSmtpValidatorSchema { v: RecordValidatorSchema, rua: RecordValidatorSchema }
 
-type UnionValidationType = StsPolicyValidatorSchema | StsSmtpValidatorSchema;
-// export type UnionValidationSchema = KeysOfUnion<UnionValidationType>;
-export interface UnionValidationSchema extends Partial<StsPolicyValidatorSchema>, Partial<StsSmtpValidatorSchema> {}
+export interface IValidationError {
+    statusCode: number;
+    message: string;
+}
 
 export interface TagDetails {
-    value?: string,
-    description?: string
+    value: string;
+    description?: string;
 }
 
 export interface RecordTagSchema {
-    v?: TagDetails,
-    id?: TagDetails,
-    rua?: TagDetails
+    v?: TagDetails;
+    id?: TagDetails;
+    rua?: TagDetails;
 }
 
-export interface ParserReturnValue {
-    tags: RecordTagSchema,
-    messages?: string[],
+export interface IValidationRecord {
+    valid: boolean;
+    tags: RecordTagSchema;
+    errors: IValidationError[]
 }
 
-export interface AllStsRecordSchema {
-    stsPolicyRecord: { exists: boolean, data: string | null },
-    stsSmtpRecord: { exists: boolean, data: string | null }
+export interface DNSRecordValidator {
+    type: AllowedRecordTypes;
+    record: AllowedRecords;
+    validate(): IValidationRecord
 }
 
-export interface FetchResponseSchema {
-    record: AllStsRecordSchema | string,
-    tags: { stspolicy?: RecordTagSchema, stsreport?: RecordTagSchema }
-}
+export interface TagDescriptorSchema { required: boolean; description: string; validate?: (value: string) => boolean }
+interface DescriptorBasic { v: TagDescriptorSchema };
+export interface StsPolicyDescriptorSchema extends DescriptorBasic { id: TagDescriptorSchema }
+export interface StsReportDescriptorSchema extends DescriptorBasic { rua: TagDescriptorSchema }
+
+export type UnionValidationSchema = StsPolicyDescriptorSchema | StsReportDescriptorSchema;
