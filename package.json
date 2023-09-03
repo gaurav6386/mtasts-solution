@@ -1,6 +1,6 @@
 {
   "name": "mtasts-solution",
-  "version": "2.3.0",
+  "version": "2.5.0",
   "description": "MTASTS parser, validator & generator for your domain ",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -28,13 +28,10 @@
     "mtasts"
   ],
   "author": "Gaurav Pandey",
-  "license": "Apache-2.0",
+  "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.5.7",
     "del-cli": "^5.1.0",
     "typescript": "^5.2.2"
-  },
-  "dependencies": {
-    "email-validator": "^2.0.4"
   }
 }

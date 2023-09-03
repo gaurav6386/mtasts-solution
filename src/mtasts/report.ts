@@ -3,11 +3,11 @@ import { validateEmail, validateRecord, validateURL } from "../utils/validator";
 import dns from 'dns';
 
 export class STSReport {
-  public type: AllowedRecordTypes = RecordTypes.STSREPORT
+  public static type: AllowedRecordTypes = RecordTypes.STSREPORT
   constructor(public domainName: string) { }
 
   /** Generate TLSRPT policy report */
-  async generate(scheme: STSReportUriSchemes, uri: string): Promise<IGeneratedRecord> {
+  static async generate(scheme: STSReportUriSchemes, uri: string): Promise<IGeneratedRecord> {
     let errors: IGenratorError[] = [];
     let modURI = '';
     switch(scheme){
@@ -32,7 +32,7 @@ export class STSReport {
   }
 
   /** Validate the specified TLSRPT record */
-  validate(record: STSReportRecord): Promise<ValidationResponse> {
+  static validate(record: STSReportRecord): Promise<ValidationResponse> {
     return new Promise((resolve, reject) => {
       try {
         if(!record) throw new Error('Please supply sts-report record for validation!');
@@ -46,7 +46,7 @@ export class STSReport {
   }
 
   /** Parse the specified TLSRPT record */
-  parse(record: STSReportRecord): Promise<RecordTagSchema> {
+  static parse(record: STSReportRecord): Promise<RecordTagSchema> {
     return new Promise((resolve, reject) => {
       this.validate(record).then(r => resolve(r.tags))
       .catch(err => reject(err))

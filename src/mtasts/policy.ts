@@ -4,7 +4,7 @@ import { validateRecord } from "../utils/validator";
 import dns from 'dns';
 
 export class STSPolicy {
-  public type: AllowedRecordTypes = RecordTypes.STSPOLICY
+  public static type: AllowedRecordTypes = RecordTypes.STSPOLICY
   constructor(
     public domainName: string,
   ) {
@@ -12,7 +12,7 @@ export class STSPolicy {
   }
 
   /** Generate new MTA-STS Policy Record  */
-  generate(): IGeneratedRecord {
+  static generate(): IGeneratedRecord {
     const policyRecord: STSPolicyRecord = `v=${AllowedStsPolicyVersion.STSv1}; id=${Date.now()}`        
     return { record: policyRecord }
   }
@@ -62,7 +62,7 @@ export class STSPolicy {
   }
 
   /** Validate the MTA-STS Policy record */
-  validate(record: STSPolicyRecord): Promise<ValidationResponse> {
+  static validate(record: STSPolicyRecord): Promise<ValidationResponse> {
     return new Promise((resolve, reject) => {
       try {
         if(!record) throw new Error('Please supply sts-policy record for validation!');
@@ -76,7 +76,7 @@ export class STSPolicy {
   }
 
   /** Parse the specified Policy TXT record */
-  parse(record: STSPolicyRecord): Promise<RecordTagSchema> {
+  static parse(record: STSPolicyRecord): Promise<RecordTagSchema> {
     return new Promise((resolve, reject) => {
       this.validate(record).then(r => resolve(r.tags))
       .catch(err => reject(err))
