@@ -44,7 +44,7 @@ export type STSPolicyKeys = typeof AllowedSTSPolicyKey[keyof typeof AllowedSTSPo
 
 /** MTA-STS Report record Types */
 type STSReportVersion = typeof AllowedStsReportVersion[keyof typeof AllowedStsReportVersion]
-type STSReportUriSchemes = typeof AllowedTLSRPTUriScheme[keyof typeof AllowedTLSRPTUriScheme]
+export type STSReportUriSchemes = typeof AllowedTLSRPTUriScheme[keyof typeof AllowedTLSRPTUriScheme]
 export type ValidSTSRua = `${STSReportUriSchemes}:${string}`
 export type STSReportRecord = `v=${STSReportVersion}; rua=${STSReportUriSchemes}:${string}`
 
@@ -52,13 +52,12 @@ export type STSReportRecord = `v=${STSReportVersion}; rua=${STSReportUriSchemes}
 //--------- ToBeAdded ----------
 
 export interface IGenratorError {
-    statusCode: number;
     message: string
 }
 
 export interface IGeneratedRecord {
     record: string;
-    errors: IGenratorError[]
+    errors?: IGenratorError[]
 }
 
 export interface DNSRecordGenerator {

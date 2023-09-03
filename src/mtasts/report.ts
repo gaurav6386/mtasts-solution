@@ -1,16 +1,37 @@
-import { AllowedRecordTypes, AllowedStsReportVersion, IGeneratedRecord, IValidationRecord, RecordTypes, STSReportRecord, ValidSTSRua } from "../types";
-import { validateRecord } from "../utils/validator";
+import { AllowedRecordTypes, AllowedStsReportVersion, IGeneratedRecord, IGenratorError, IValidationRecord, RecordTypes, STSReportRecord, STSReportUriSchemes, ValidSTSRua } from "../types";
+import { validateEmail, validateRecord, validateURL } from "../utils/validator";
 import dns from 'dns';
 
 export class STSReport {
   public type: AllowedRecordTypes = RecordTypes.STSREPORT
   constructor(public domainName: string) { }
 
-  generate(rua: ValidSTSRua): IGeneratedRecord {
-    const stsReportRecord: STSReportRecord = `v=${AllowedStsReportVersion.TLSRPTv1}; rua=${rua}`
-    return { record: stsReportRecord, errors: [] }
+  /** Generate TLSRPT policy report */
+  async generate(scheme: STSReportUriSchemes, uri: string): Promise<IGeneratedRecord> {
+    let errors: IGenratorError[] = [];
+    let modURI = '';
+    switch(scheme){
+      case 'mailto': {
+        const isValidEmail = await validateEmail(uri);
+        if(!isValidEmail) errors.push({ message: 'Invalid email specified'});
+        else modURI = uri;
+        break;
+      }
+      case 'https': {
+        const isValidURL = await validateURL(uri);
+        if(!isValidURL) errors.push({ message: 'Invalid URL specified' });
+        else modURI = `//${uri}`
+        break;
+      }
+    }
+    
+    if(errors.length) return { record: '', errors }
+    
+    const stsReportRecord: STSReportRecord = `v=${AllowedStsReportVersion.TLSRPTv1}; rua=${scheme}:${modURI}`
+    return { record: stsReportRecord, errors }
   }
 
+  /** Validate the specified TLSRPT record */
   validate(record: STSReportRecord): Promise<IValidationRecord> {
     return new Promise((resolve, reject) => {
       try {
@@ -23,6 +44,7 @@ export class STSReport {
     })
   }
 
+  /** Fetch currently hosted TLSRPT policy record on DNS */
   fetch(): Promise<string> {
     return new Promise((resolve, reject) => {
       dns.resolveTxt(`_smtp._tls.${this.domainName}`, (err, tlsReport) => {
