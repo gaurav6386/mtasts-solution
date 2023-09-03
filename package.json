@@ -33,8 +33,5 @@
     "@types/node": "^20.5.7",
     "del-cli": "^5.1.0",
     "typescript": "^5.2.2"
-  },
-  "dependencies": {
-    "email-validator": "^2.0.4"
   }
 }
