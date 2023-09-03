@@ -1,6 +1,6 @@
 {
   "name": "mtasts-solution",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "MTASTS parser, validator & generator for your domain ",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
