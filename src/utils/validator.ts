@@ -55,6 +55,10 @@ export async function validateEmail(email: string){
     return new RegExp(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/).test(email);
 }
 
+const RestrictedCharacterInURL = ['@'];
 export async function validateURL(url: string) {
+    const restrictedChars = RestrictedCharacterInURL.join('');
+    const regExString = `^[^${restrictedChars}]*$`; 
+    if(!(new RegExp(regExString).test(url))) return false;
     return new RegExp(/[A-Za-z0-9.-]+\.[A-Za-z]{2,}([A-Za-z0-9\/?=&%-_#]+)?$/).test(url)
 }
