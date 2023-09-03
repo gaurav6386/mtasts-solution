@@ -36,6 +36,14 @@ const policy = await stsPolicy.fetch();
 //{ record: 'v=STSv1; id=126743859' }
 console.log('Fetched MTA-STS policy:', policy.record);
 
+stsPolicy.parse('v=STSv1; id=123456789')
+.then(record => {
+  // { v: { value: 'STSv1', description: '...' }, id: { value: 123456789, description: '...' }}
+}).catch(err => {
+  //[{ message: 'reason' }, ...]
+  if(err && err.length) err.forEach(e => console.error(e.message))
+})
+
 // Generate new Record
 const newPolicyRecord = await stsPolicy.generate();
 // { record: 'v=STSv1; id=123456789' }
@@ -49,12 +57,12 @@ const { valid, data, errors } = await stsPolicy.checkPolicyFile();
 
 ##### Managing TLSRPT policy record
 ```js
-const { STSRecord } = require('mtasts-solution');
+const { STSReport } = require('mtasts-solution');
 
-const stsRecord = new STSRecord('<example.com>');
+const stsReport = new STSReport('<example.com>');
 
 // Checks whether the paramter is a valid TLSRPT record or not 
-stsRecord.validate(record)
+stsReport.validate(record)
   .then(response => {
     // Example response: { valid: true, tags: {...}, errors: [...] }
     // Further processing based on the response
@@ -65,10 +73,18 @@ stsRecord.validate(record)
   });
 
 // Fetching existing record on DNS 
-const policy = await stsRecord.fetch();
+const policy = await stsReport.fetch();
 console.log('Fetched TLSRPT record:', policy.record);
 
+stsReport.parse('v=STSv1; id=123456789')
+.then(record => {
+  // Process parsed record...
+}).catch(err => {
+  //[{ message: 'reason' }, ...]
+  if(err && err.length) err.forEach(e => console.error(e.message))
+})
+
 // Generate new Record
-const newTlsrptRecord = await stsRecord.generate('mailto', 'abc@example.com);
+const newTlsrptRecord = await stsReport.generate('mailto', 'abc@example.com);
 // { record: 'v=TLSRPTv1; rua=mailto:abc@example.com', errors: [] }   
 ```
