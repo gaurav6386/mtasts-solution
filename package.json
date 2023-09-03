@@ -1,6 +1,6 @@
 {
   "name": "mtasts-solution",
-  "version": "2.2.1",
+  "version": "2.2.4",
   "description": "MTASTS parser, validator & generator for your domain ",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "clear": "del lib/*",
-    "build": "npm run clear && tsc"
+    "build": "npm run clear && tsc",
+    "pub": "npm run build && npm publish"
   },
   "repository": {
     "type": "git",
