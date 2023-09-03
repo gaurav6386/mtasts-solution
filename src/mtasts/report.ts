@@ -45,7 +45,7 @@ export class STSReport {
   }
 
   /** Fetch currently hosted TLSRPT policy record on DNS */
-  fetch(): Promise<string> {
+  fetch(): Promise<{ record: string }> {
     return new Promise((resolve, reject) => {
       dns.resolveTxt(`_smtp._tls.${this.domainName}`, (err, tlsReport) => {
         if (err) {
@@ -64,8 +64,7 @@ export class STSReport {
           if (record && tlsReport[i].length > 0) record = tlsReport[i].join("")
           if (record != null) break;
         }
-        if (record == null) return reject(new Error('MTASTS SMTP Record is not set.'));
-        return resolve(record);
+        return resolve({ record: !!record ? record: '' });
       })
     })
   }
