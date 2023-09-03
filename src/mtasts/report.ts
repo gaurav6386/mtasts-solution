@@ -8,7 +8,7 @@ export class STSReport {
 
   generate(rua: ValidSTSRua): IGeneratedRecord {
     const stsReportRecord: STSReportRecord = `v=${AllowedStsReportVersion.TLSRPTv1}; rua=${rua}`
-    return { record: stsReportRecord, errors: [] }
+    return { record: stsReportRecord }
   }
 
   validate(record: STSReportRecord): Promise<IValidationRecord> {

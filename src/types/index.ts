@@ -52,13 +52,12 @@ export type STSReportRecord = `v=${STSReportVersion}; rua=${STSReportUriSchemes}
 //--------- ToBeAdded ----------
 
 export interface IGenratorError {
-    statusCode: number;
     message: string
 }
 
 export interface IGeneratedRecord {
     record: string;
-    errors: IGenratorError[]
+    errors?: IGenratorError[]
 }
 
 export interface DNSRecordGenerator {

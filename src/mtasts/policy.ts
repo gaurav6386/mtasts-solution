@@ -14,7 +14,7 @@ export class STSPolicy {
   /** Generate new MTA-STS Policy Record  */
   generate(): IGeneratedRecord {
     const policyRecord: STSPolicyRecord = `v=${AllowedStsPolicyVersion.STSv1}; id=${Date.now()}`        
-    return { record: policyRecord, errors: [] }
+    return { record: policyRecord }
   }
 
   #parsePolicyFileContent(text: string): Promise<IPolicyValidationResponse> {
