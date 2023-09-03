@@ -1,4 +1,4 @@
-import { AllowedRecordTypes, AllowedStsReportVersion, IGeneratedRecord, IGenratorError, IValidationRecord, RecordTypes, STSReportRecord, STSReportUriSchemes, ValidSTSRua } from "../types";
+import { AllowedRecordTypes, AllowedStsReportVersion, IGeneratedRecord, IGenratorError, RecordTagSchema, RecordTypes, STSReportRecord, STSReportUriSchemes, ValidationResponse } from "../types";
 import { validateEmail, validateRecord, validateURL } from "../utils/validator";
 import dns from 'dns';
 
@@ -32,15 +32,24 @@ export class STSReport {
   }
 
   /** Validate the specified TLSRPT record */
-  validate(record: STSReportRecord): Promise<IValidationRecord> {
+  validate(record: STSReportRecord): Promise<ValidationResponse> {
     return new Promise((resolve, reject) => {
       try {
         if(!record) throw new Error('Please supply sts-report record for validation!');
         const validatedRecord = validateRecord(this.type, record)
-        resolve(validatedRecord)
+        if(!validatedRecord.valid) reject(validatedRecord.errors);
+        resolve({ valid: validatedRecord.valid, tags: validatedRecord.tags })
       } catch(err) {
         reject(err)
       }
+    })
+  }
+
+  /** Parse the specified TLSRPT record */
+  parse(record: STSReportRecord): Promise<RecordTagSchema> {
+    return new Promise((resolve, reject) => {
+      this.validate(record).then(r => resolve(r.tags))
+      .catch(err => reject(err))
     })
   }
 

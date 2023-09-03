@@ -1,4 +1,4 @@
-import { AllowedRecordTypes, AllowedSTSPolicyKey, AllowedSTSPolicyMode, AllowedStsPolicyVersion, IGeneratedRecord, IPolicyValidationError, IPolicyValidationResponse, IValidationRecord, PolicyFileFormat, RecordTypes, STSPolicyMode, STSPolicyRecord, STSPolicyVersion } from "../types"
+import { AllowedRecordTypes, AllowedSTSPolicyKey, AllowedSTSPolicyMode, AllowedStsPolicyVersion, IGeneratedRecord, IPolicyValidationError, IPolicyValidationResponse, ValidationResponse, PolicyFileFormat, RecordTypes, STSPolicyMode, STSPolicyRecord, STSPolicyVersion, RecordTagSchema } from "../types"
 import { hasValidPolicyKeys, hasValidPolicyMode } from "../types/guard";
 import { validateRecord } from "../utils/validator";
 import dns from 'dns';
@@ -62,15 +62,24 @@ export class STSPolicy {
   }
 
   /** Validate the MTA-STS Policy record */
-  validate(record: STSPolicyRecord): Promise<IValidationRecord> {
+  validate(record: STSPolicyRecord): Promise<ValidationResponse> {
     return new Promise((resolve, reject) => {
       try {
         if(!record) throw new Error('Please supply sts-policy record for validation!');
         const validatedRecord = validateRecord(this.type, record);
-        resolve(validatedRecord);
+        if(!validatedRecord.valid) reject(validatedRecord.errors);
+        else resolve({ valid: validatedRecord.valid, tags: validatedRecord.tags });
       } catch(err: any) {
         reject(err.message)
       }
+    })
+  }
+
+  /** Parse the specified Policy TXT record */
+  parse(record: STSPolicyRecord): Promise<RecordTagSchema> {
+    return new Promise((resolve, reject) => {
+      this.validate(record).then(r => resolve(r.tags))
+      .catch(err => reject(err))
     })
   }
 
