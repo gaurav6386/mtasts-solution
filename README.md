@@ -33,7 +33,8 @@ stsPolicy.validate(record)
 
 // Fetching existing record on DNS 
 const policy = await stsPolicy.fetch();
-console.log('Fetched MTA-STS policy:', policy);
+//{ record: 'v=STSv1; id=126743859' }
+console.log('Fetched MTA-STS policy:', policy.record);
 
 // Generate new Record
 const newPolicyRecord = await stsPolicy.generate();
@@ -65,7 +66,7 @@ stsRecord.validate(record)
 
 // Fetching existing record on DNS 
 const policy = await stsRecord.fetch();
-console.log('Fetched TLSRPT record:', policy);
+console.log('Fetched TLSRPT record:', policy.record);
 
 // Generate new Record
 const newTlsrptRecord = await stsRecord.generate('mailto', 'abc@example.com);
