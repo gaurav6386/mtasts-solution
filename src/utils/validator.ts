@@ -20,7 +20,7 @@ export function validateRecord(type: AllowedRecordTypes, record: AllowedRecords)
 
     // Make sure `v` is the first tag
     if (!/^v$/i.test(rules[0][0])) {
-        errors.push({ actual: rules[0][0], expected: 'v', message: `First tag in this record must be 'v', but found: '${rules[0][0]}'` });
+        errors.push({ found: rules[0][0], expected: 'v', message: `First tag in this record must be 'v', but found: '${rules[0][0]}'` });
         validationStatus.valid = false;
         return validationStatus;
     }
@@ -45,7 +45,7 @@ export function validateRecord(type: AllowedRecordTypes, record: AllowedRecords)
                     errors.push({ message: err.message });
                 }
             }
-        } else errors.push({ actual: `${term}`, expected: Object.keys(validator),  message: `Unknown tag ${term}` })
+        } else errors.push({ found: `${term}`, expected: Object.keys(validator),  message: `Unknown tag ${term}` })
     }
     if(errors.length) validationStatus.valid = false;
     return validationStatus;
