@@ -1,4 +1,4 @@
-import { AllowedRecordTypes, AllowedRecords, IValidationError, IValidationRecord, RecordTagSchema, RecordTypes, TagDetails, UnionValidationSchema } from "../types";
+import { AllowedRecordTypes, AllowedRecords, IValidationError, ValidationRecord, RecordTagSchema, RecordTypes, TagDetails, UnionValidationSchema } from "../types";
 import { stsPolicyDescriptor, stsReportDescriptor } from "./descriptors";
 
 function getValidator(type: AllowedRecordTypes){
@@ -9,14 +9,14 @@ function getValidator(type: AllowedRecordTypes){
     }
 }
 
-export function validateRecord(type: AllowedRecordTypes, record: AllowedRecords): IValidationRecord {
+export function validateRecord(type: AllowedRecordTypes, record: AllowedRecords): ValidationRecord {
     let terms = record.split(/;/)
         .map(t => t.trim()) // Trim surrounding whitespace
         .filter(x => x !== ''); // Ignore empty tags
 
     let rules: string[][] = terms.map(x => x.split(/[=]/).map(p => p.trim()));
     let errors: IValidationError[] = [];
-    let validationStatus: IValidationRecord = { valid: true, tags: {}, errors };
+    let validationStatus: ValidationRecord = { valid: true, tags: {}, errors };
 
     // Make sure `v` is the first tag
     if (!/^v$/i.test(rules[0][0])) {

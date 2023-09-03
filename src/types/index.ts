@@ -91,16 +91,18 @@ export interface RecordTagSchema {
     rua?: TagDetails;
 }
 
-export interface IValidationRecord {
+export type ValidationRecord = {
     valid: boolean;
     tags: RecordTagSchema;
     errors: IValidationError[]
 }
 
+export type ValidationResponse = Pick<ValidationRecord, 'valid' | 'tags'>
+
 export interface DNSRecordValidator {
     type: AllowedRecordTypes;
     record: AllowedRecords;
-    validate(): IValidationRecord
+    validate(): ValidationRecord
 }
 
 export interface TagDescriptorSchema { required: boolean; description: string; validate?: (value: string) => boolean }
