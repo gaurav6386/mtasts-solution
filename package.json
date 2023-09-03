@@ -28,7 +28,7 @@
     "mtasts"
   ],
   "author": "Gaurav Pandey",
-  "license": "Apache-2.0",
+  "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.5.7",
     "del-cli": "^5.1.0",
