@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "clear": "del lib/*",
-    "build": "npm run clear && tsc"
+    "build": "npm run clear && tsc",
+    "publish": "npm run build && npm publish"
   },
   "repository": {
     "type": "git",
