@@ -75,7 +75,7 @@ export class STSPolicy {
   }
 
   /** Fetch existing MTA-STS policy record from DNS */
-  fetch(): Promise<string> {
+  fetch(): Promise<{ record: string }> {
     return new Promise((resolve, reject) => {
       if(!this.domainName) reject("Domain name is required!");
       dns.resolveTxt(`_mta-sts.${this.domainName}`, (err, stsPolicyRecord) => {
@@ -95,9 +95,8 @@ export class STSPolicy {
           if (record && stsPolicyRecord[i].length > 0) record = stsPolicyRecord[i].join("")
           if (record != null) break;
         }
-        
-        if (record == null) return reject(new Error('STS Policy Record not available'));
-        return resolve(record);
+
+        return resolve({ record: !!record ? record: '' });
       })
     })
   }
