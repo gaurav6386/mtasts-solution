@@ -14,6 +14,19 @@ export const AllowedStsPolicyVersion = {
     // STSv2: "STSv2"
 } as const
 
+export const AllowedSTSPolicyKey = {
+    VERSION: 'version',
+    MODE: 'mode',
+    MX: 'mx',
+    MAXAGE: 'max_age'
+} as const
+
+export const AllowedSTSPolicyMode = {
+    ENFORCE: 'enforce',
+    TESTING: 'testing',
+    NONE: 'none'
+} as const
+
 // New versions will be added in future
 export const AllowedStsReportVersion = {
     TLSRPTv1: "TLSRPTv1"
@@ -24,8 +37,10 @@ export const AllowedTLSRPTUriScheme = { MAILTO: "mailto", HTTPS: "https" } as co
 export type AllowedRecordTypes = typeof RecordTypes[keyof typeof RecordTypes]
 
 /** MTA-STS Policy record Types */
-type STSPolicyVersion = typeof AllowedStsPolicyVersion[keyof typeof AllowedStsPolicyVersion]
+export type STSPolicyVersion = typeof AllowedStsPolicyVersion[keyof typeof AllowedStsPolicyVersion]
 export type STSPolicyRecord = `v=${STSPolicyVersion}; id=${number}`
+export type STSPolicyMode = typeof AllowedSTSPolicyMode[keyof typeof AllowedSTSPolicyMode]
+export type STSPolicyKeys = typeof AllowedSTSPolicyKey[keyof typeof AllowedSTSPolicyKey]
 
 /** MTA-STS Report record Types */
 type STSReportVersion = typeof AllowedStsReportVersion[keyof typeof AllowedStsReportVersion]
@@ -60,7 +75,9 @@ export type AllowedRecords = IRecordFormat[keyof IRecordFormat];
 
 
 export interface IValidationError {
-    statusCode: number;
+    // statusCode: number;
+    found?: string | number | string[] | number[]; 
+    expected?: string | number | string[] | number[];
     message: string;
 }
 
@@ -93,3 +110,18 @@ export interface StsPolicyDescriptorSchema extends DescriptorBasic { id: TagDesc
 export interface StsReportDescriptorSchema extends DescriptorBasic { rua: TagDescriptorSchema }
 
 export type UnionValidationSchema = StsPolicyDescriptorSchema | StsReportDescriptorSchema;
+
+export type PolicyFileFormat = {
+    version: STSPolicyVersion | '';
+    mode: STSPolicyMode | '';
+    mx: string[];
+    max_age: number;
+}
+
+export interface IPolicyValidationError extends IValidationError {}
+
+export interface IPolicyValidationResponse {
+    valid: boolean;
+    data?: PolicyFileFormat;
+    errors: IPolicyValidationError[];
+} 

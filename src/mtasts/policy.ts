@@ -1,4 +1,5 @@
-import { AllowedRecordTypes, AllowedStsPolicyVersion, IGeneratedRecord, IValidationRecord, RecordTypes, STSPolicyRecord } from "../types"
+import { AllowedRecordTypes, AllowedSTSPolicyKey, AllowedSTSPolicyMode, AllowedStsPolicyVersion, IGeneratedRecord, IPolicyValidationError, IPolicyValidationResponse, IValidationRecord, PolicyFileFormat, RecordTypes, STSPolicyMode, STSPolicyRecord, STSPolicyVersion } from "../types"
+import { hasValidPolicyKeys, hasValidPolicyMode } from "../types/guard";
 import { validateRecord } from "../utils/validator";
 import dns from 'dns';
 
@@ -10,14 +11,61 @@ export class STSPolicy {
     if(!domainName) throw new Error("Domain name is required!");
   }
 
+  /** Generate new MTA-STS Policy Record  */
   generate(): IGeneratedRecord {
     const policyRecord: STSPolicyRecord = `v=${AllowedStsPolicyVersion.STSv1}; id=${Date.now()}`        
     return { record: policyRecord, errors: [] }
   }
 
+  #parsePolicyFileContent(text: string): Promise<IPolicyValidationResponse> {
+    return new Promise((resolve, reject) => {
+      if(!text) reject('No content found!');
+      let parsedData: PolicyFileFormat = {
+        version: '', mode: '', mx: [], max_age: 0 
+      };
+      let errors: IPolicyValidationError[] = [];
+      text.split('\n').forEach(line => {
+        const [key, value] = line.trim()?.split(':').map(r => r?.trim());
+        if(key === AllowedSTSPolicyKey.MODE && !hasValidPolicyMode(value))
+          errors.push({ found: value, expected: Object.values(AllowedSTSPolicyMode), message: 'Incorrect mode exists on the hosted policy file' })
+        switch(key) {
+          case AllowedSTSPolicyKey.MODE:
+            parsedData[key] = value as STSPolicyMode;  break;
+          case AllowedSTSPolicyKey.VERSION:
+            parsedData[key] = value as STSPolicyVersion;  break;
+          case AllowedSTSPolicyKey.MX: parsedData[key].push(value); break;
+          case AllowedSTSPolicyKey.MAXAGE: parsedData[key] = Number(value);
+          if(!hasValidPolicyKeys(key)) errors.push({ found: key, expected: Object.values(AllowedSTSPolicyKey), message: 'Incorrect key found in hosted policy file'})
+        }
+      })
+      if(errors.length) resolve({ valid: false, data: parsedData, errors })
+      else resolve({ valid: true, data: parsedData, errors })
+    })
+  }
+
+  /** Check if policy file exist for a domain */
+  checkPolicyFile(): Promise<IPolicyValidationResponse> {
+    return new Promise((resolve, reject) => {
+      const policyUri = `https://mta-sts.${this.domainName}/.well-known/mta-sts.txt`;
+      
+      fetch(policyUri)
+      .then(r => r.text())
+      .then(r => this.#parsePolicyFileContent(r))
+      .then(r => resolve(r))
+      .catch(err => {
+        switch(err.cause?.code) {
+          case 'ENOTFOUND': return reject(new Error(`MTA-STS policy file not hosted on ${policyUri}`)); 
+          default: reject(err)
+        }
+      })
+    })
+  }
+
+  /** Validate the MTA-STS Policy record */
   validate(record: STSPolicyRecord): Promise<IValidationRecord> {
     return new Promise((resolve, reject) => {
       try {
+        if(!record) throw new Error('Please supply sts-policy record for validation!');
         const validatedRecord = validateRecord(this.type, record);
         resolve(validatedRecord);
       } catch(err: any) {
@@ -26,6 +74,7 @@ export class STSPolicy {
     })
   }
 
+  /** Fetch existing MTA-STS policy record from DNS */
   fetch(): Promise<string> {
     return new Promise((resolve, reject) => {
       if(!this.domainName) reject("Domain name is required!");
@@ -38,7 +87,7 @@ export class STSPolicy {
         var record = null;
         for (var i = 0; i < stsPolicyRecord.length; i++) {
           for (var j = 0; j < stsPolicyRecord[i].length; j++) {
-            if (stsPolicyRecord[i][j].startsWith('v=STS')) {
+            if (stsPolicyRecord[i][j] && stsPolicyRecord[i][j].trim().startsWith('v=STS')) {
               record = stsPolicyRecord[i][j];
               break;
             }

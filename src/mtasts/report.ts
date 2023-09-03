@@ -14,6 +14,7 @@ export class STSReport {
   validate(record: STSReportRecord): Promise<IValidationRecord> {
     return new Promise((resolve, reject) => {
       try {
+        if(!record) throw new Error('Please supply sts-report record for validation!');
         const validatedRecord = validateRecord(this.type, record)
         resolve(validatedRecord)
       } catch(err) {
